@@ -1,0 +1,60 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+url = 'https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv'
+data = pd.read_csv(url)
+
+print("First few rows of the dataset:")
+print(data.head())
+
+print("\nMissing values in each column:")
+print(data.isnull().sum())
+
+data['Age'].fillna(data['Age'].median(), inplace=True)
+
+data.drop('Cabin', axis=1, inplace=True)
+
+data['Embarked'].fillna(data['Embarked'].mode()[0], inplace=True)
+
+data['Sex'] = data['Sex'].map({'male': 0, 'female': 1})
+data['Embarked'] = data['Embarked'].map({'C': 0, 'Q': 1, 'S': 2})
+
+print("\nDescriptive statistics of the dataset:")
+print(data.describe(include='all'))
+
+plt.figure(figsize=(14, 7))
+
+plt.subplot(1, 2, 1)
+sns.histplot(data['Age'], kde=True)
+plt.title('Age Distribution')
+
+plt.subplot(1, 2, 2)
+sns.histplot(data['Fare'], kde=True)
+plt.title('Fare Distribution')
+
+plt.tight_layout()
+plt.show()
+
+corr = data.corr()
+
+plt.figure(figsize=(10, 8))
+sns.heatmap(corr, annot=True, cmap='coolwarm', fmt='.2f')
+plt.title('Correlation Matrix')
+plt.show()
+
+plt.figure(figsize=(7, 5))
+sns.barplot(x='Sex', y='Survived', data=data)
+plt.title('Survival Rate by Sex')
+plt.xticks(ticks=[0, 1], labels=['Male', 'Female'])
+plt.show()
+plt.figure(figsize=(7, 5))
+sns.barplot(x='Pclass', y='Survived', data=data)
+plt.title('Survival Rate by Pclass')
+plt.show()
+
+plt.figure(figsize=(7, 5))
+sns.scatterplot(x='Age', y='Fare', hue='Survived', data=data, palette='coolwarm')
+plt.title('Age vs Fare by Survival')
+plt.show()
